@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    {% if post.image %}
+        <img src="{{ url_for('static', filename='assets/img/' + post.image) }}" alt="Cover image" style="max-width:100%; margin: 20px 0;">
+    {% endif %}
+    <h3>{{ post.subtitle }}</h3>
+    <p><strong>Category:</strong> {{ post.category }} | <em>{{ post.date_posted.strftime('%Y-%m-%d') }}</em></p>
+    <hr>
+    <div>
+        {{ post.content }}
+    </div>
+    <br>
+    <a href="{{ url_for('main.home') }}">← Back to Home</a>
+{% endblock %}
