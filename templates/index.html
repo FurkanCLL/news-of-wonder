@@ -9,7 +9,7 @@
         <h4>{{ post.subtitle }}</h4>
         <p><strong>Category:</strong> {{ post.category }} | <em>{{ post.date_posted.strftime('%Y-%m-%d') }}</em></p>
         <p>{{ post.content[:150] }}...</p>
-        <a href="{{ url_for('main.post_detail', post_id=post.id) }}">Read more →</a>
+        <a href="{{ url_for('post_detail', post_id=post.id) }}">Read more →</a>
         <hr>
     </div>
 {% endfor %}

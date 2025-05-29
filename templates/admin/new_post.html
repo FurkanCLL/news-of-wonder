@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Create New Post</h2>
+    <form method="POST">
+        <label>Title:</label><br>
+        <input type="text" name="title" required><br><br>
+
+        <label>Subtitle:</label><br>
+        <input type="text" name="subtitle"><br><br>
+
+        <label>Content:</label><br>
+        <textarea name="content" rows="8" cols="60" required></textarea><br><br>
+
+        <label>Image filename (optional):</label><br>
+        <input type="text" name="image"><br><br>
+
+        <label>Category:</label><br>
+        <input type="text" name="category"><br><br>
+
+        <label>Type:</label><br>
+        <select name="type" required>
+            <option value="article">Article</option>
+            <option value="news">News</option>
+        </select><br><br>
+
+        <input type="submit" value="Create Post">
+    </form>
+
+    <br>
+    <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+{% endblock %}
