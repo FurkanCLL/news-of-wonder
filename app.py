@@ -10,6 +10,7 @@ from functools import wraps
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash
 import os
+import re
 
 # Load environment variables
 load_dotenv()
@@ -46,6 +47,7 @@ class BlogPost(db.Model):
     date: Mapped[str] = mapped_column(String(250), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
+    slug: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
 
 # Admin User table (only id=1 is valid)
 class User(UserMixin, db.Model):
@@ -68,17 +70,26 @@ def admin_only(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# ROUTES
+def generate_slug(title):
+    slug = re.sub(r'[\W_]+', '-', title.lower())
+    return slug.strip('-')
 
+# ROUTES
 @app.route('/')
 def get_all_posts():
     result = db.session.execute(db.select(BlogPost))
     posts = result.scalars().all()
     return render_template("index.html", all_posts=posts, current_user=current_user)
 
-@app.route("/post/<int:post_id>")
-def show_post(post_id):
-    requested_post = db.get_or_404(BlogPost, post_id)
+@app.route("/<string:slug>")
+def show_post(slug):
+    requested_post = db.session.execute(
+        db.select(BlogPost).where(BlogPost.slug == slug)
+    ).scalar_one_or_none()
+
+    if not requested_post:
+        abort(404)
+
     return render_template("post.html", post=requested_post, current_user=current_user)
 
 from forms import CreatePostForm
@@ -111,7 +122,8 @@ def add_new_post():
             body=form.body.data,
             img_url=form.img_url.data,
             author=current_user,
-            date=date.today().strftime("%B %d, %Y")
+            date=date.today().strftime("%B %d, %Y"),
+            slug = generate_slug(form.title.data)
         )
         db.session.add(new_post)
         db.session.commit()
